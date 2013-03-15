@@ -1,0 +1,47 @@
+<project name="Merbok" basedir=".">
+    <property name="src.dir" value="src"/>
+    <property name="test.dir" value="tst"/>
+
+    <property name="build.dir" value="build"/>
+    <property name="classes.dir" value="${build.dir}/classes"/>
+    <property name="report.dir"  value="${build.dir}/junitreport"/>
+    <property name="lib.dir"     value="lib"/>
+
+    <path id="classpath">
+        <fileset dir="${lib.dir}" includes="**/*.jar"/>
+    </path>
+
+    <target name="clean">
+        <delete dir="${build.dir}"/>
+    </target>
+
+    <target name="compile">
+        <mkdir dir="${classes.dir}"/>
+        <javac srcdir="${src.dir}" destdir="${classes.dir}"/>
+    </target>
+
+    <path id="test.classpath">
+        <path refid="classpath"/>
+        <pathelement path="${test.dir}"/>
+        <pathelement path="${classes.dir}"/>
+    </path>
+
+    <target name="compile-test" depends="compile" description="Compile Test Classes">
+        <javac srcdir="${test.dir}" verbose="true">
+            <classpath refid="test.classpath"/>
+        </javac>
+    </target>
+
+    <target name="test" depends="compile-test">
+        <mkdir dir="${report.dir}"/>
+        <junit printsummary="yes" haltonfailure="yes" showoutput="yes">
+            <classpath refid="test.classpath"/>
+            <batchtest fork="yes" todir="${test.dir}">
+                <formatter type="xml"/>
+                <fileset dir="${test.dir}"/>
+            </batchtest>
+        </junit>
+    </target>
+
+    <target name="clean-build" depends="clean,compile"/>
+</project>
